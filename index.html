@@ -1,386 +1,980 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>王荣辉 - 嵌入式开发工程师</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>王荣辉 | 嵌入式开发工程师</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
       background: #0d1117;
       color: #c9d1d9;
       line-height: 1.6;
+      overflow-x: hidden;
     }
-    a { color: #58a6ff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
 
-    header {
-      text-align: center;
-      padding: 60px 20px 30px;
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    a { color: #58a6ff; text-decoration: none; transition: color .3s; }
+    a:hover { color: #79c0ff; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
-    header h1 {
-      font-size: 2.5em;
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(47,128,237,.15); }
+      50% { box-shadow: 0 0 40px rgba(47,128,237,.3); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: .3; }
+      50% { opacity: 1; }
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #particles-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(13,17,23,.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #21262d;
+      transition: transform .3s;
+    }
+    nav.hidden { transform: translateY(-100%); }
+    nav .inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 56px;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.1em;
       background: linear-gradient(135deg, #2f80ed, #7b61ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
     }
-    header .subtitle {
-      font-size: 1.1em;
+    nav .links { display: flex; gap: 6px; }
+    nav .links a {
       color: #8b949e;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: .85em;
+      transition: all .2s;
     }
-    header .tagline {
-      margin-top: 15px;
-      font-size: 0.95em;
-      color: #58a6ff;
-    }
-    header .school {
-      margin-top: 10px;
-      color: #8b949e;
-      font-size: 0.95em;
-    }
-
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #30363d, transparent);
-      margin: 0;
-    }
-
-    section {
-      padding: 40px 0;
-    }
-    section h2 {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      padding-left: 12px;
-      border-left: 3px solid #2f80ed;
-    }
-    section h3 {
-      font-size: 1.1em;
-      margin: 15px 0 8px;
+    nav .links a:hover {
       color: #f0f6fc;
+      background: #21262d;
+    }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #c9d1d9;
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 4px;
     }
 
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 20px 60px;
+      position: relative;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(47,128,237,.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(123,97,255,.08) 0%, transparent 50%),
+        #0d1117;
     }
-    .about-grid .item {
-      background: #161b22;
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid #21262d;
-      font-size: 0.9em;
+    .hero h1 {
+      font-size: clamp(2.5em, 6vw, 4em);
+      font-weight: 800;
+      background: linear-gradient(135deg, #2f80ed, #7b61ff, #f0883e);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 6s ease infinite;
+      margin-bottom: 12px;
     }
-    .about-grid .item strong {
-      color: #58a6ff;
+    .hero .typewriter {
+      font-size: clamp(1em, 2.5vw, 1.3em);
+      color: #8b949e;
+      min-height: 1.6em;
+      margin-bottom: 8px;
     }
-
-    .badges {
+    .hero .typewriter .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background: #58a6ff;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink .8s step-end infinite;
+    }
+    .hero .info-line {
+      color: #484f58;
+      font-size: .9em;
+      margin-top: 6px;
+    }
+    .hero .info-line span { margin: 0 10px; }
+    .hero .info-line a { color: #8b949e; }
+    .hero .hero-badges {
+      margin-top: 24px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
-      margin: 20px 0;
     }
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
+    .hero .hero-badges .badge {
+      padding: 6px 16px;
       border-radius: 20px;
-      font-size: 0.85em;
+      font-size: .85em;
       font-weight: 600;
+      border: 1px solid #21262d;
+      background: rgba(22,27,34,.6);
+      backdrop-filter: blur(4px);
+      transition: all .3s;
     }
-    .badge.blue { background: #1f3a5f; color: #58a6ff; }
-    .badge.purple { background: #2a1f5f; color: #a388ff; }
-    .badge.green { background: #1a3f2f; color: #3fb950; }
-    .badge.orange { background: #3f2a1a; color: #f0883e; }
-    .badge.red { background: #3f1a1a; color: #f85149; }
-    .badge.gray { background: #1f2128; color: #8b949e; }
+    .hero .hero-badges .badge:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(47,128,237,.2);
+    }
+    .hero .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #484f58;
+      font-size: .8em;
+      animation: float 2s ease-in-out infinite;
+      cursor: pointer;
+    }
+    .hero .scroll-indicator svg {
+      display: block;
+      margin: 4px auto 0;
+    }
 
+    /* Sections */
+    section {
+      padding: 80px 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    section .section-title {
+      font-size: 1.6em;
+      font-weight: 700;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, #30363d, transparent);
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .about-card {
+      background: linear-gradient(135deg, #161b22, #1c2333);
+      border: 1px solid #21262d;
+      border-radius: 12px;
+      padding: 24px;
+      transition: all .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #2f80ed, #7b61ff);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .about-card:hover {
+      border-color: #30363d;
+      transform: translateY(-4px);
+      animation: glow 2s ease-in-out infinite;
+    }
+    .about-card:hover::before { opacity: 1; }
+    .about-card .icon {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+    .about-card h3 {
+      font-size: 1em;
+      color: #f0f6fc;
+      margin-bottom: 8px;
+    }
+    .about-card p {
+      font-size: .88em;
+      color: #8b949e;
+      line-height: 1.7;
+    }
+
+    /* Skills */
     .skill-icons {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
       justify-content: center;
-      margin: 20px 0;
+      margin-bottom: 30px;
     }
-    .skill-icons img { width: 48px; height: 48px; }
+    .skill-icons .skill-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .skill-icons .skill-icon img {
+      width: 52px;
+      height: 52px;
+      transition: all .3s;
+      filter: grayscale(.2);
+    }
+    .skill-icons .skill-icon:hover img {
+      transform: translateY(-4px) scale(1.1);
+      filter: grayscale(0);
+    }
+    .skill-icons .skill-icon .label {
+      font-size: .7em;
+      color: #484f58;
+      transition: color .3s;
+    }
+    .skill-icons .skill-icon:hover .label { color: #8b949e; }
 
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .skill-tag {
+      padding: 5px 14px;
+      border-radius: 16px;
+      font-size: .82em;
+      font-weight: 500;
+      border: 1px solid transparent;
+      transition: all .3s;
+      cursor: default;
+    }
+    .skill-tag.mcu { background: rgba(47,128,237,.12); color: #58a6ff; border-color: rgba(47,128,237,.3); }
+    .skill-tag.fpga { background: rgba(123,97,255,.12); color: #a388ff; border-color: rgba(123,97,255,.3); }
+    .skill-tag.rtos { background: rgba(63,185,80,.12); color: #3fb950; border-color: rgba(63,185,80,.3); }
+    .skill-tag.pcb { background: rgba(240,136,62,.12); color: #f0883e; border-color: rgba(240,136,62,.3); }
+    .skill-tag.tool { background: rgba(248,81,73,.12); color: #f85149; border-color: rgba(248,81,73,.3); }
+    .skill-tag.ai { background: rgba(139,148,158,.12); color: #8b949e; border-color: rgba(139,148,158,.3); }
+    .skill-tag:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    }
+
+    /* Competition Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #2f80ed, #7b61ff, transparent);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 20px 24px;
+      transition: all .3s;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -26px;
+      top: 24px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2f80ed;
+      border: 2px solid #0d1117;
+      box-shadow: 0 0 0 3px #2f80ed;
+    }
+    .timeline-item:hover {
+      border-color: #30363d;
+      transform: translateX(4px);
+    }
+    .timeline-item .medal { font-size: 1.2em; }
+    .timeline-item .title {
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 4px;
+    }
+    .timeline-item .detail {
+      font-size: .88em;
+      color: #8b949e;
+    }
+    .timeline-item .time {
+      font-size: .8em;
+      color: #484f58;
+      margin-top: 6px;
+    }
+
+    /* Projects */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      gap: 20px;
+    }
+    @media (max-width: 520px) {
+      .project-grid { grid-template-columns: 1fr; }
+    }
     .project-card {
       background: #161b22;
       border: 1px solid #21262d;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 16px;
+      border-radius: 12px;
+      padding: 24px;
+      transition: all .3s;
+      position: relative;
+      overflow: hidden;
     }
+    .project-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #2f80ed, #7b61ff);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .project-card:hover {
+      border-color: #30363d;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,.3);
+    }
+    .project-card:hover::after { opacity: 1; }
     .project-card .role {
       display: inline-block;
-      font-size: 0.8em;
+      font-size: .75em;
       padding: 2px 10px;
-      border-radius: 12px;
-      background: #1f3a5f;
+      border-radius: 10px;
+      background: rgba(47,128,237,.12);
       color: #58a6ff;
-      margin-bottom: 8px;
+      border: 1px solid rgba(47,128,237,.3);
+      margin-bottom: 10px;
     }
-    .project-card ul {
-      list-style: none;
-      padding-left: 0;
+    .project-card h3 {
+      font-size: 1.1em;
+      color: #f0f6fc;
+      margin-bottom: 10px;
+    }
+    .project-card ul { list-style: none; }
+    .project-card ul li {
+      font-size: .88em;
+      color: #8b949e;
+      margin-bottom: 5px;
+      padding-left: 16px;
+      position: relative;
     }
     .project-card ul li::before {
-      content: "▸ ";
+      content: '▸';
+      position: absolute;
+      left: 0;
       color: #58a6ff;
     }
-    .project-card ul li {
-      margin-bottom: 4px;
-      font-size: 0.9em;
-      color: #c9d1d9;
+
+    /* Stats Section */
+    .stats-section {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(47,128,237,.05) 0%, transparent 60%),
+        #0d1117;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    .stats-section .inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .stats-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin: 30px 0;
+    }
+    .stats-grid img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      transition: all .3s;
+    }
+    .stats-grid img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(0,0,0,.4);
     }
 
-    .competition-item {
+    .snake-container {
+      margin-top: 40px;
+      padding: 20px;
       background: #161b22;
+      border-radius: 12px;
       border: 1px solid #21262d;
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin-bottom: 12px;
     }
-    .competition-item .title {
-      font-weight: 600;
-      color: #f0f6fc;
-    }
-    .competition-item .detail {
-      font-size: 0.9em;
-      color: #8b949e;
-      margin-top: 4px;
-    }
-    .competition-item .time {
-      font-size: 0.8em;
-      color: #484f58;
-      margin-top: 2px;
+    .snake-container img {
+      max-width: 100%;
+      height: auto;
     }
 
+    /* Honors Table */
+    .honors-table-wrap {
+      overflow-x: auto;
+    }
     .honors-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 15px 0;
-    }
-    .honors-table th, .honors-table td {
+      border-radius: 10px;
+      overflow: hidden;
       border: 1px solid #21262d;
-      padding: 10px 14px;
-      text-align: left;
-      font-size: 0.9em;
     }
     .honors-table th {
       background: #161b22;
       color: #8b949e;
       font-weight: 600;
+      font-size: .85em;
+      text-transform: uppercase;
+      letter-spacing: .05em;
     }
-    .honors-table tr:nth-child(even) { background: #161b22; }
-    .honors-table .level { text-align: center; }
+    .honors-table th, .honors-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #21262d;
+      font-size: .9em;
+    }
+    .honors-table tr:last-child td { border-bottom: none; }
+    .honors-table tr:hover td { background: rgba(22,27,34,.5); }
+    .honors-table .level { text-align: center; font-weight: 600; }
 
-    .cert-list {
+    .cert-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin: 15px 0;
+      gap: 12px;
+      margin-top: 20px;
     }
-    .cert-list .cert-item {
+    .cert-item {
       background: #161b22;
       border: 1px solid #21262d;
       border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 0.9em;
+      padding: 10px 18px;
+      font-size: .9em;
+      transition: all .3s;
+    }
+    .cert-item:hover {
+      border-color: #30363d;
+      transform: translateY(-2px);
     }
 
+    /* Contact / Footer */
     footer {
       text-align: center;
-      padding: 30px 20px;
-      color: #484f58;
-      font-size: 0.85em;
+      padding: 50px 20px;
       border-top: 1px solid #21262d;
     }
-    footer .links { margin-bottom: 15px; }
-    footer .links a {
-      display: inline-block;
-      margin: 0 8px;
-      padding: 8px 18px;
-      border-radius: 20px;
+    footer .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    footer .contact-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      border-radius: 25px;
       background: #21262d;
       color: #c9d1d9;
       font-weight: 600;
-      font-size: 0.9em;
+      font-size: .9em;
+      border: 1px solid #30363d;
+      transition: all .3s;
     }
-    footer .links a:hover {
+    footer .contact-links a:hover {
       background: #30363d;
+      border-color: #58a6ff;
+      transform: translateY(-2px);
       text-decoration: none;
     }
+    footer .contact-links a.github:hover { border-color: #f0f6fc; }
+    footer .contact-links a.email:hover { border-color: #f85149; }
+    footer .footer-meta {
+      color: #484f58;
+      font-size: .82em;
+    }
+    footer .visitor-badge {
+      margin-top: 12px;
+    }
 
+    /* Responsive */
     @media (max-width: 640px) {
-      .about-grid { grid-template-columns: 1fr; }
-      header h1 { font-size: 1.8em; }
+      nav .links {
+        display: none;
+        position: absolute;
+        top: 56px;
+        left: 0; right: 0;
+        background: rgba(13,17,23,.95);
+        backdrop-filter: blur(12px);
+        flex-direction: column;
+        padding: 12px;
+        border-bottom: 1px solid #21262d;
+      }
+      nav .links.open { display: flex; }
+      .nav-toggle { display: block; }
+      section { padding: 50px 16px; }
+      .project-grid { grid-template-columns: 1fr; }
+      .timeline { padding-left: 24px; }
+      .timeline-item::before { left: -19px; width: 10px; height: 10px; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <h1>王荣辉</h1>
-    <div class="subtitle">嵌入式开发工程师 / FPGA工程师 / 硬件工程师</div>
-    <div class="tagline">电话：15623605623 | 邮箱：2293077966@qq.com</div>
-    <div class="school">🎓 武汉纺织大学 · 通信工程 · 本科在读 (2023.09 - 至今)</div>
+<canvas id="particles-canvas"></canvas>
+
+<div class="content-wrapper">
+
+<!-- Navigation -->
+<nav id="navbar">
+  <div class="inner">
+    <div class="logo">王荣辉</div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+    <div class="links" id="navLinks">
+      <a href="#about">关于</a>
+      <a href="#skills">技术栈</a>
+      <a href="#competitions">竞赛</a>
+      <a href="#projects">项目</a>
+      <a href="#honors">荣誉</a>
+      <a href="#stats">数据</a>
+      <a href="#contact">联系</a>
+    </div>
   </div>
-</header>
+</nav>
 
-<div class="divider"></div>
+<!-- Hero -->
+<section class="hero" id="home">
+  <h1>王荣辉</h1>
+  <div class="typewriter">
+    <span id="typedText"></span><span class="cursor"></span>
+  </div>
+  <div class="info-line">
+    <span>📞 15623605623</span>
+    <span>✉️ <a href="mailto:2293077966@qq.com">2293077966@qq.com</a></span>
+    <span>🎂 2005.02.21</span>
+  </div>
+  <div class="hero-badges">
+    <span class="badge">⚙️ 嵌入式开发</span>
+    <span class="badge">🔌 FPGA 设计</span>
+    <span class="badge">🛠️ 硬件电路</span>
+    <span class="badge">🎓 武汉纺织大学</span>
+  </div>
+  <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+    SCROLL
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
 
-<div class="container">
-
-<section>
-  <h2>👋 关于我</h2>
-  <p style="margin-bottom:16px;">通信工程本科在读，主攻嵌入式系统开发、FPGA 设计与硬件电路设计。具备从原理图绘制、PCB Layout 到嵌入式软件驱动的完整项目开发经验。在电子设计竞赛、嵌入式设计大赛、FPGA 应用设计大赛中多次获得国家级奖项。</p>
+<!-- About -->
+<section id="about">
+  <div class="section-title reveal">👋 关于我</div>
+  <p class="reveal" style="margin-bottom:28px; color:#8b949e; font-size:.95em;">
+    通信工程本科在读，主攻嵌入式系统开发、FPGA 设计与硬件电路设计。具备从原理图绘制、PCB Layout 到嵌入式软件驱动的完整项目开发经验。在电子设计竞赛、嵌入式设计大赛、FPGA 应用设计大赛中多次获得国家级奖项。
+  </p>
   <div class="about-grid">
-    <div class="item"><strong>⚙️ 嵌入式方向</strong><br>精通 STM32F1/F4/H7 系列 MCU 开发，熟练使用 Keil MDK、CLion、STM32CubeMX，掌握 HAL/LL 库编程与 FreeRTOS 多任务开发</div>
-    <div class="item"><strong>🔌 FPGA 方向</strong><br>熟悉 Verilog HDL、Xilinx Vivado，具备图像处理（边缘检测、颜色识别、形状识别）FPGA 实现经验</div>
-    <div class="item"><strong>🛠️ 硬件设计</strong><br>精通立创 EDA，独立完成四层板设计，掌握 ADC/DAC 采集电路、运放电路、滤波电路设计及高速信号完整性</div>
-    <div class="item"><strong>📟 电子测量</strong><br>熟练使用示波器、信号发生器、四位半万用表等仪器，具备锁相放大、滤波降噪等信号处理能力</div>
+    <div class="about-card reveal">
+      <div class="icon">⚙️</div>
+      <h3>嵌入式方向</h3>
+      <p>精通 STM32F1/F4/H7 系列 MCU 开发，熟练使用 Keil MDK、CLion、STM32CubeMX，掌握 HAL/LL 库编程与 FreeRTOS 多任务开发</p>
+    </div>
+    <div class="about-card reveal">
+      <div class="icon">🔌</div>
+      <h3>FPGA 方向</h3>
+      <p>熟悉 Verilog HDL、Xilinx Vivado，具备图像处理（边缘检测、颜色识别、形状识别）FPGA 实现经验</p>
+    </div>
+    <div class="about-card reveal">
+      <div class="icon">🛠️</div>
+      <h3>硬件设计</h3>
+      <p>精通立创 EDA，独立完成四层板设计，掌握 ADC/DAC 采集电路、运放电路、滤波电路设计及高速信号完整性</p>
+    </div>
+    <div class="about-card reveal">
+      <div class="icon">📟</div>
+      <h3>电子测量</h3>
+      <p>熟练使用示波器、信号发生器、四位半万用表等仪器，具备锁相放大、滤波降噪等信号处理能力</p>
+    </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<section>
-  <h2>🛠️ 技术栈</h2>
-  <div class="skill-icons">
-    <img src="https://skillicons.dev/icons?i=c,cpp,python,verilog,linux,cmake,git,github,vscode,matlab" alt="Skills" />
+<!-- Skills -->
+<section id="skills">
+  <div class="section-title reveal">🛠️ 技术栈</div>
+  <div class="skill-icons reveal">
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=c" alt="C" /><span class="label">C</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=cpp" alt="C++" /><span class="label">C++</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=python" alt="Python" /><span class="label">Python</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=verilog" alt="Verilog" /><span class="label">Verilog</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=linux" alt="Linux" /><span class="label">Linux</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=cmake" alt="CMake" /><span class="label">CMake</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=git" alt="Git" /><span class="label">Git</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=github" alt="GitHub" /><span class="label">GitHub</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=vscode" alt="VS Code" /><span class="label">VS Code</span></div>
+    <div class="skill-icon"><img src="https://skillicons.dev/icons?i=matlab" alt="MATLAB" /><span class="label">MATLAB</span></div>
   </div>
-  <div class="badges">
-    <span class="badge blue">MCU · STM32 F1/F4/H7 · Renesas RA</span>
-    <span class="badge purple">FPGA · Xilinx Vivado · Verilog</span>
-    <span class="badge green">RTOS · FreeRTOS</span>
-    <span class="badge orange">PCB · 立创 EDA</span>
-    <span class="badge red">Tools · Keil MDK · CLion</span>
-    <span class="badge gray">AI · Codex · Cursor</span>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<section>
-  <h2>🏆 竞赛经历</h2>
-
-  <div class="competition-item">
-    <div class="title">🥉 全国大学生嵌入式设计大赛 国家三等奖（瑞萨赛道）</div>
-    <div class="detail">基于瑞萨 RA 系列 MCU 开发"智慧农林检测系统"，完成多传感器驱动开发与 LCD 图形界面</div>
-    <div class="time">2024.09 - 2025.08</div>
-  </div>
-
-  <div class="competition-item">
-    <div class="title">🥈 蓝桥杯 EDA 设计与开发大赛 国家二等奖</div>
-    <div class="detail">掌握专业 PCB 设计流程，熟练应用布局布线规则与高速 PCB 设计要点</div>
-    <div class="time">2024.03</div>
-  </div>
-
-  <div class="competition-item">
-    <div class="title">🥈 全国大学生电子设计竞赛 湖北赛区二等奖</div>
-    <div class="detail">展现较强的电路设计与系统调试能力</div>
-    <div class="time">2024.03</div>
-  </div>
-
-  <div class="competition-item">
-    <div class="title">🏅 海云捷讯杯 FPGA 应用设计大赛 省级奖项</div>
-    <div class="detail">基于 FPGA 开发物块视觉识别系统，流水线架构实现 30fps 实时图像处理，通过 UART 与机械臂通信</div>
-    <div class="time">2024.09 - 2025.08</div>
+  <div class="skill-tags reveal">
+    <span class="skill-tag mcu">STM32 F1/F4/H7</span>
+    <span class="skill-tag mcu">Renesas RA</span>
+    <span class="skill-tag fpga">Xilinx Vivado</span>
+    <span class="skill-tag fpga">Verilog HDL</span>
+    <span class="skill-tag rtos">FreeRTOS</span>
+    <span class="skill-tag pcb">立创 EDA</span>
+    <span class="skill-tag pcb">四层板设计</span>
+    <span class="skill-tag tool">Keil MDK</span>
+    <span class="skill-tag tool">CLion</span>
+    <span class="skill-tag tool">STM32CubeMX</span>
+    <span class="skill-tag ai">Codex</span>
+    <span class="skill-tag ai">Cursor</span>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<section>
-  <h2>🚀 代表项目</h2>
-
-  <div class="project-card">
-    <div class="role">FPGA 模块负责人</div>
-    <h3>🦾 FPGA 视觉识别与机械臂控制系统</h3>
-    <ul>
-      <li>基于 Xilinx FPGA 开发视觉识别模块，实现物块颜色/形状/旋转角度实时识别</li>
-      <li>设计图像处理流水线：采集 → 预处理 → 特征提取 → 结果输出</li>
-      <li>实现 Sobel 边缘检测、颜色阈值分割、轮廓提取等算法的硬件加速</li>
-      <li>双 FPGA 架构协作，系统处理延迟 &lt; 50ms，识别准确率 &gt; 95%</li>
-    </ul>
-  </div>
-
-  <div class="project-card">
-    <div class="role">系统架构与软件负责人</div>
-    <h3>🌿 智慧农林环境监测系统</h3>
-    <ul>
-      <li>基于瑞萨 RA 系列 MCU，荣获嵌入式设计大赛国家级三等奖</li>
-      <li>架构：MCU 主控 + 5 路传感器（PM2.5/温湿度/土壤湿度/烟雾）+ LCD + 电源管理</li>
-      <li>使用 FreeRTOS 实现多任务实时系统，完成数据曲线绘制与报警阈值设置</li>
-    </ul>
-  </div>
-
-  <div class="project-card">
-    <div class="role">硬件负责人</div>
-    <h3>⚡ 电磁循迹小车系统设计</h3>
-    <ul>
-      <li>基于 STM32F103 设计完整硬件电路与 PCB，实现速度环+角度环串联 PID 控制</li>
-      <li>完成直线加速、弯道跟踪、进环逻辑等关键功能开发</li>
-      <li>掌握电磁感应原理、电机 PWM 控制、传感器数据处理等核心技术</li>
-    </ul>
-  </div>
-
-  <div class="project-card">
-    <div class="role">主要开发者</div>
-    <h3>📟 高精度信号测量装置设计</h3>
-    <ul>
-      <li>针对电赛仪器仪表类题目设计高精度信号采集与处理系统</li>
-      <li>掌握锁相放大、相关检测、斩波稳零等微小信号检测技术</li>
-      <li>熟练运用示波器、信号发生器、四位半万用表进行电路调试与测量</li>
-    </ul>
+<!-- Competitions -->
+<section id="competitions">
+  <div class="section-title reveal">🏆 竞赛经历</div>
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <span class="medal">🥉</span>
+      <div class="title">全国大学生嵌入式设计大赛 · 国家三等奖（瑞萨赛道）</div>
+      <div class="detail">基于瑞萨 RA 系列 MCU 开发"智慧农林检测系统"，完成多传感器驱动开发与 LCD 图形界面。实现 PM2.5、温湿度、土壤湿度、烟雾等多通道数据采集与实时显示。</div>
+      <div class="time">2024.09 - 2025.08</div>
+    </div>
+    <div class="timeline-item reveal">
+      <span class="medal">🥈</span>
+      <div class="title">蓝桥杯 EDA 设计与开发大赛 · 国家二等奖</div>
+      <div class="detail">掌握专业 PCB 设计流程，熟练应用布局布线规则，实现美观性与实用性的平衡设计。掌握阻抗匹配、差分信号、电源完整性等高速 PCB 设计要点。</div>
+      <div class="time">2024.03</div>
+    </div>
+    <div class="timeline-item reveal">
+      <span class="medal">🥈</span>
+      <div class="title">全国大学生电子设计竞赛 · 湖北赛区二等奖</div>
+      <div class="detail">展现较强的电路设计与系统调试能力，完成复杂电子系统的快速原型设计与调试。</div>
+      <div class="time">2024.03</div>
+    </div>
+    <div class="timeline-item reveal">
+      <span class="medal">🏅</span>
+      <div class="title">海云捷讯杯 FPGA 应用设计大赛 · 省级奖项</div>
+      <div class="detail">基于 FPGA 开发物块视觉识别系统，实现颜色识别、形状识别、旋转角度检测。采用流水线架构实现 30fps 实时图像处理，通过 UART 与机械臂控制板通信。</div>
+      <div class="time">2024.09 - 2025.08</div>
+    </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<section>
-  <h2>🏅 荣誉奖项</h2>
-  <table class="honors-table">
-    <thead>
-      <tr><th>年份</th><th>奖项</th><th>级别</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>2024</td><td>全国大学生嵌入式设计大赛（瑞萨赛道）</td><td class="level">🥉 国家三等奖</td></tr>
-      <tr><td>2023</td><td>蓝桥杯 EDA 设计与开发大赛</td><td class="level">🥈 国家二等奖</td></tr>
-      <tr><td>2024</td><td>全国大学生电子设计竞赛（湖北赛区）</td><td class="level">🥈 省级二等奖</td></tr>
-      <tr><td>2024</td><td>海云捷讯杯 FPGA 应用设计大赛</td><td class="level">🏅 省级奖项</td></tr>
-    </tbody>
-  </table>
+<!-- Projects -->
+<section id="projects">
+  <div class="section-title reveal">🚀 代表项目</div>
+  <div class="project-grid">
+    <div class="project-card reveal">
+      <div class="role">FPGA 模块负责人</div>
+      <h3>🦾 FPGA 视觉识别与机械臂控制系统</h3>
+      <ul>
+        <li>基于 Xilinx FPGA 开发视觉识别模块，实现物块颜色/形状/旋转角度实时识别</li>
+        <li>设计图像处理流水线：采集 → 预处理 → 特征提取 → 结果输出</li>
+        <li>实现 Sobel 边缘检测、颜色阈值分割、轮廓提取等算法的硬件加速</li>
+        <li>双 FPGA 架构协作，系统处理延迟 &lt; 50ms，识别准确率 &gt; 95%</li>
+      </ul>
+    </div>
+    <div class="project-card reveal">
+      <div class="role">系统架构与软件负责人</div>
+      <h3>🌿 智慧农林环境监测系统</h3>
+      <ul>
+        <li>基于瑞萨 RA 系列 MCU，荣获嵌入式设计大赛国家级三等奖</li>
+        <li>架构：MCU 主控 + 5 路传感器（PM2.5/温湿度/土壤湿度/烟雾）+ LCD + 电源管理</li>
+        <li>使用 FreeRTOS 实现多任务实时系统，完成数据曲线绘制与报警阈值设置</li>
+        <li>具备低功耗设计能力，系统支持电池供电和太阳能充电</li>
+      </ul>
+    </div>
+    <div class="project-card reveal">
+      <div class="role">硬件负责人</div>
+      <h3>⚡ 电磁循迹小车系统设计</h3>
+      <ul>
+        <li>基于 STM32F103 设计完整硬件电路与 PCB，实现速度环+角度环串联 PID 控制</li>
+        <li>完成直线加速、弯道跟踪、进环逻辑等关键功能开发</li>
+        <li>掌握电磁感应原理、电机 PWM 控制、传感器数据处理等核心技术</li>
+      </ul>
+    </div>
+    <div class="project-card reveal">
+      <div class="role">主要开发者</div>
+      <h3>📟 高精度信号测量装置设计</h3>
+      <ul>
+        <li>针对电赛仪器仪表类题目设计高精度信号采集与处理系统</li>
+        <li>掌握锁相放大、相关检测、斩波稳零等微小信号检测技术</li>
+        <li>熟练运用示波器、信号发生器、四位半万用表进行电路调试与测量</li>
+        <li>完成往届题目复现，积累丰富的工程实践经验</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
-<section>
-  <h2>📜 技能证书</h2>
-  <div class="cert-list">
-    <span class="cert-item">📖 CET-4（大学英语四级）</span>
+<!-- Honors -->
+<section id="honors">
+  <div class="section-title reveal">🏅 荣誉 &amp; 证书</div>
+  <div class="honors-table-wrap reveal">
+    <table class="honors-table">
+      <thead><tr><th>年份</th><th>奖项</th><th class="level">级别</th></tr></thead>
+      <tbody>
+        <tr><td>2024</td><td>全国大学生嵌入式设计大赛（瑞萨赛道）</td><td class="level">🥉 国家三等奖</td></tr>
+        <tr><td>2023</td><td>蓝桥杯 EDA 设计与开发大赛</td><td class="level">🥈 国家二等奖</td></tr>
+        <tr><td>2024</td><td>全国大学生电子设计竞赛（湖北赛区）</td><td class="level">🥈 省级二等奖</td></tr>
+        <tr><td>2024</td><td>海云捷讯杯 FPGA 应用设计大赛</td><td class="level">🏅 省级奖项</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cert-grid reveal">
+    <span class="cert-item">📖 CET-4 大学英语四级</span>
     <span class="cert-item">💻 计算机二级（C 语言）</span>
     <span class="cert-item">🔧 电工证</span>
   </div>
 </section>
 
+<!-- Stats -->
+<div class="stats-section" id="stats">
+  <div class="inner">
+    <div class="section-title reveal" style="color:#f0f6fc; max-width:960px; margin:0 auto 30px;">📊 GitHub 数据</div>
+    <div class="stats-grid reveal">
+      <img height="165" src="https://github-readme-streak-stats.herokuapp.com?user=xiaowang12301&theme=transparent&hide_border=true" alt="GitHub Streak" />
+    </div>
+    <div class="stats-grid reveal">
+      <img src="https://github-profile-trophy.vercel.app/?username=xiaowang12301&theme=flat&no-frame=true&column=4&margin-w=8&margin-h=8" alt="GitHub Trophy" />
+    </div>
+    <div class="snake-container reveal">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/xiaowang12301/xiaowang12301.github.io/output/github-contribution-grid-snake-dark.svg" />
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/xiaowang12301/xiaowang12301.github.io/output/github-contribution-grid-snake.svg" />
+        <img alt="github contribution grid snake animation" src="https://raw.githubusercontent.com/xiaowang12301/xiaowang12301.github.io/output/github-contribution-grid-snake.svg" />
+      </picture>
+    </div>
+  </div>
 </div>
 
-<div class="divider"></div>
-
-<footer>
-  <div class="links">
-    <a href="https://github.com/xiaowang12301" target="_blank">GitHub</a>
-    <a href="mailto:2293077966@qq.com">Email</a>
+<!-- Footer -->
+<footer id="contact">
+  <div class="contact-links reveal">
+    <a class="github" href="https://github.com/xiaowang12301" target="_blank">🐙 GitHub</a>
+    <a class="email" href="mailto:2293077966@qq.com">✉️ 2293077966@qq.com</a>
   </div>
-  <p>© 2026 王荣辉 · Built with ❤️</p>
+  <div class="footer-meta">
+    <p>© 2026 王荣辉 · 嵌入式开发工程师</p>
+    <div class="visitor-badge">
+      <img src="https://komarev.com/ghpvc/?username=xiaowang12301&style=flat-square&color=6AA9FF" alt="Visitor Count" />
+    </div>
+  </div>
 </footer>
+
+</div>
+
+<script>
+// Typing effect
+const phrases = [
+  '嵌入式开发工程师 / FPGA工程师 / 硬件工程师',
+  'STM32 · Renesas · Xilinx Vivado',
+  'PCB Design · FreeRTOS · Algorithm',
+  'Keep building, keep debugging'
+];
+let phraseIdx = 0, charIdx = 0, isDeleting = false;
+const el = document.getElementById('typedText');
+
+function typeLoop() {
+  const current = phrases[phraseIdx];
+  if (!isDeleting) {
+    el.textContent = current.substring(0, charIdx + 1);
+    charIdx++;
+    if (charIdx === current.length) {
+      isDeleting = true;
+      setTimeout(typeLoop, 2000);
+      return;
+    }
+    setTimeout(typeLoop, 80 + Math.random() * 40);
+  } else {
+    el.textContent = current.substring(0, charIdx - 1);
+    charIdx--;
+    if (charIdx === 0) {
+      isDeleting = false;
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      setTimeout(typeLoop, 500);
+      return;
+    }
+    setTimeout(typeLoop, 30 + Math.random() * 20);
+  }
+}
+typeLoop();
+
+// Particles
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 2 + 0.5,
+      a: Math.random() * 0.5 + 0.1
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h;
+      if (p.y > h) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(88, 166, 255, ${p.a})`;
+      ctx.fill();
+    }
+    // lines
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 150) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(88, 166, 255, ${0.06 * (1 - d / 150)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Reveal on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav hide on scroll
+let lastScroll = 0;
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const cur = window.scrollY;
+  nav.classList.toggle('hidden', cur > lastScroll && cur > 100);
+  lastScroll = cur;
+}, { passive: true });
+
+// Mobile nav toggle
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.querySelectorAll('#navLinks a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+</script>
 
 </body>
 </html>
